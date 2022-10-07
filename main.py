@@ -1,4 +1,4 @@
-# bot.py - default client start
+# main.py - default client start
 import os
 
 import discord
@@ -7,10 +7,24 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    print(f'We have logged in as {client.user}')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!bot'):
+        await message.channel.send('Hello!')
+
+    if message.content.startswith('!help'):
+        await message.channel.send("Here's a few things I can do:")
 
 client.run(TOKEN)
